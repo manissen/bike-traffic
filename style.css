@@ -1,0 +1,58 @@
+html,
+body {
+    font: 100%/1.5 system-ui, sans-serif;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    flex-direction: column;
+    margin-bottom: 1%;
+}
+
+header {
+    display: flex;
+    align-items: baseline;
+    gap: 1em;
+    margin-bottom: 1em;
+}
+  
+label {
+    margin-left: auto; /* pushes the label to the right */
+}
+  
+label input[type="range"] {
+    vertical-align: middle;
+    margin-left: 0.5em;
+}
+  
+#selected-time,
+#any-time {
+    display: block;
+    margin-top: 0.25em;
+}
+  
+#any-time {
+    color: #666;
+    font-style: italic;
+}  
+
+#map {
+    width: 95%; /* Adjust width to your desired size */
+    height: 85%; /* Adjust height to your desired size */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow for effect */
+    border-radius: 8px; /* Optional: rounded corners */
+    flex: 1;
+}
+
+#map svg {
+    position: absolute;
+    z-index: 1;
+    width: 95%;
+    height: 85%;
+    pointer-events: none;
+}
+
+.d3-overlay circle {
+    pointer-events: auto;
+}
