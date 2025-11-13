@@ -1,58 +1,107 @@
 html,
 body {
-    font: 100%/1.5 system-ui, sans-serif;
-    height: 100%;
-    width: 100%;
-    display: flex;
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
-    flex-direction: column;
-    margin-bottom: 1%;
+  font: 100%/1.5 system-ui, sans-serif;
+  height: 100%;
+  width: 100%;              /* remove browser default margin */
+  display: flex;            /* vertical layout */
+  flex-direction: column;
+  overflow: hidden;         /* prevent scrolling */
 }
 
 header {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 0.5em;
+  flex: 0 0 auto;           /* don't grow or shrink */
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+header label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9rem;
+}
+
+.main{
+    margin: 2%;
     display: flex;
-    align-items: baseline;
-    gap: 1em;
-    margin-bottom: 1em;
+    flex-direction: column;
+    height: 100%;
 }
-  
-label {
-    margin-left: auto; /* pushes the label to the right */
+
+#time-slider {
+  width: 200%;
+  margin-top: 0.5em;
 }
-  
-label input[type="range"] {
-    vertical-align: middle;
-    margin-left: 0.5em;
-}
-  
+
 #selected-time,
 #any-time {
-    display: block;
-    margin-top: 0.25em;
+  display: block;
+  margin-top: 0.25em;
 }
-  
+
 #any-time {
-    color: #666;
-    font-style: italic;
-}  
+  color: #777;
+  font-style: italic;
+}
 
 #map {
-    width: 95%; /* Adjust width to your desired size */
-    height: 85%; /* Adjust height to your desired size */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow for effect */
-    border-radius: 8px; /* Optional: rounded corners */
-    flex: 1;
+  flex: 1 1 auto;           /* fill remaining space */
+  width: 100%;
+  position: relative;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
 #map svg {
-    position: absolute;
-    z-index: 1;
-    width: 95%;
-    height: 85%;
-    pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.legend {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1em;
+  margin: 0.5em 0;
+  font-size: 0.9rem;
+  flex: 0 0 auto;
+}
+
+.legend > div {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  padding: 0.4em 0.8em;
+  background-color: var(--color);
+  color: white;
+  font-weight: 600;
+}
+
+.d3-overlay circle,
+.legend > div {
+    --color-departures: steelblue;
+    --color-arrivals: darkorange;
+    --color: color-mix(
+    in oklch,
+    var(--color-departures) calc(100% * var(--departure-ratio)),
+    var(--color-arrivals)
+  );
 }
 
 .d3-overlay circle {
-    pointer-events: auto;
+  fill: var(--color);
+  stroke: white;
+  opacity: 0.7; 
+  pointer-events: auto;
 }

@@ -103,6 +103,7 @@ map.on('load', async () => {
         },
       );
       let stations = computeStationTraffic(jsonData.data.stations, trips);
+      let stationFlow = d3.scaleQuantize().domain([0, 1]).range([0, 0.5, 1]);
   
       // Create square-root scale for circle radius
       const radiusScale = d3
@@ -112,7 +113,7 @@ map.on('load', async () => {
   
       // Draw circles
       const circles = svg.selectAll('circle')
-        .data(stations, (d) => d.short_name)
+        .data(stations, d => d.short_name)
         .enter()
         .append('circle')
         .attr('r', d => radiusScale(d.total_trips))
@@ -120,9 +121,13 @@ map.on('load', async () => {
         .attr('stroke', 'white')
         .attr('stroke-width', 1)
         .attr('opacity', 0.6)
+        .style('--departure-ratio', d => stationFlow(d.departures / d.total_trips))
         .style('pointer-events', 'auto')
-        .append('title')
+
+      // Append title without reassigning circles
+      circles.append('title')
         .text(d => `${d.total_trips} trips (${d.departures} departures, ${d.arrivals} arrivals)`);
+
   
       // Position circles
       function updatePositions() {
@@ -142,6 +147,7 @@ map.on('load', async () => {
       const timeSlider = document.getElementById('time-slider');
       const selectedTime = document.getElementById('selected-time');
       const anyTimeLabel = document.getElementById('any-time');
+
   
       function updateTimeDisplay() {
         timeFilter = Number(timeSlider.value); // Get slider value
@@ -161,32 +167,37 @@ map.on('load', async () => {
       function updateScatterPlot(timeFilter) {
         // Filter trips and recompute station traffic
         const filteredTrips = filterTripsbyTime(trips, timeFilter);
-        const filteredStations = computeStationTraffic(stations, filteredTrips);
+        const filteredStations = computeStationTraffic([...jsonData.data.stations], filteredTrips);
       
         // Adjust circle size scale based on filter
         timeFilter === -1
           ? radiusScale.range([0, 25])
           : radiusScale.range([3, 50]);
       
-        // Rebind data to circles, preserving station mapping by key
-        circles
-          .data(filteredStations, (d) => d.short_name)
+        // Rebind and update circles
+        const updated = circles
+          .data(filteredStations, d => d.short_name)
           .join(
             enter => enter
               .append('circle')
-              .attr('fill', 'steelblue')
               .attr('stroke', 'white')
               .attr('stroke-width', 1)
               .attr('opacity', 0.6)
+              .style('--departure-ratio', d => d.total_trips ? d.departures / d.total_trips : 0)
+              .style('pointer-events', 'auto')
               .append('title')
               .text(d => `${d.total_trips} trips (${d.departures} departures, ${d.arrivals} arrivals)`),
             update => update,
             exit => exit.remove()
-          )
-          .attr('r', (d) => radiusScale(d.totalTraffic))
+          );
+      
+        updated
+          .attr('r', d => radiusScale(d.total_trips))
+          .style('--departure-ratio', d => d.total_trips ? d.departures / d.total_trips : 0)
           .select('title')
           .text(d => `${d.total_trips} trips (${d.departures} departures, ${d.arrivals} arrivals)`);
       }
+      
       
   
       timeSlider.addEventListener('input', updateTimeDisplay);
